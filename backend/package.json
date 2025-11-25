@@ -1,0 +1,38 @@
+{
+  "name": "online-retail-store",
+  "version": "1.0.0",
+  "description": "Group 2 Final Project",
+  "keywords": [
+    "online",
+    "retail",
+    "store",
+    "final",
+    "project"
+  ],
+  "homepage": "https://github.com/BreadleInSchool/Final-Project#readme",
+  "bugs": {
+    "url": "https://github.com/BreadleInSchool/Final-Project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BreadleInSchool/Final-Project.git"
+  },
+  "license": "ISC",
+  "author": "CS221 Group 2",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^7.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
