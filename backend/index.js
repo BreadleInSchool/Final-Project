@@ -27,8 +27,8 @@ async function start() {
 	try {
 		const db = await connectToDatabase(MONGO_URI);
 		// ensure unique index on email
-		const users = db.collection('users');
-		await users.createIndex({ email: 1 }, { unique: true });
+		const customers = db.collection('customers');
+		await customers.createIndex({ email: 1 }, { unique: true });
 
 		app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
 	} catch (err) {

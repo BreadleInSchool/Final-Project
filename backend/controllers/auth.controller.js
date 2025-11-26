@@ -4,12 +4,12 @@ import { signToken } from '../utils/tokenUtils.js';
 import { ok, created, error } from '../utils/responseUtils.js';
 
 export async function register(req, res) {
-  const { email, password, name } = req.body;
+  const { email, password, firstName, lastName, phone, address } = req.body;
   if (!email || !password) return error(res, 400, 'email and password required');
   try {
     const existing = await findByEmail(email);
     if (existing) return error(res, 409, 'User already exists');
-    const insertedId = await createUser({ email, password, name });
+    const insertedId = await createUser({ email, password, firstName, lastName, phone, address });
     const token = signToken({ id: insertedId.toString(), email });
     return created(res, { token });
   } catch (err) {
