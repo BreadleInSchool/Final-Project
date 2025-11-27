@@ -1,29 +1,12 @@
-import { MongoClient } from 'mongodb';
+import mongoose from "mongoose";
+import config from "./index.js";
 
-let _client = null;
-let _db = null;
-
-export async function connectToDatabase(uri, dbName = 'final_project') {
-  if (_db) return _db;
-  _client = new MongoClient(uri);
-  await _client.connect();
-  _db = _client.db(dbName);
-  return _db;
-}
-
-export function getDb() {
-  if (!_db) throw new Error('Database not connected. Call connectToDatabase first.');
-  return _db;
-}
-
-export function getCollection(name) {
-  return getDb().collection(name);
-}
-
-export async function closeDatabase() {
-  if (_client) {
-    await _client.close();
-    _client = null;
-    _db = null;
+export const connectToDatabase = async () => {
+  try {
+    await mongoose.connect(config.mongoUri);
+    console.log("MongoDB connected!");
+  } catch (err) {
+    console.error("Database error:", err.message);
+    process.exit(1);
   }
-}
+};

@@ -2,14 +2,13 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 import { connectToDatabase } from "./config/database.js";
 import config from "./config/index.js";
 
-// Import routes
 import authRoutes from "./routes/auth.routes.js";
 import customerRoutes from "./routes/customer.routes.js";
 
-// Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -21,7 +20,7 @@ const PORT = config.port;
 app.use(
   cors({
     origin: config.corsOrigin,
-    credentials: true, // Allow cookies to be sent
+    credentials: true,
     allowedHeaders: "*",
     methods: "*",
   })
@@ -29,9 +28,9 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); // Parse cookies
+app.use(cookieParser());
 
-// Health check endpoint
+// Health check
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -48,18 +47,17 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API Routes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 
-// Error handling middleware (must be last)
+// Error handlers
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// Connect to database and start server
+// Start server
 connectToDatabase().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Environment: ${config.nodeEnv}`);
+    console.log(`Server running at http://localhost:${PORT}`);
   });
 });

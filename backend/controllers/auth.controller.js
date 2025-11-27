@@ -1,47 +1,32 @@
-import { createUser, findByEmail, findById } from '../models/User.js';
-import bcrypt from 'bcryptjs';
-import { signToken } from '../utils/tokenUtils.js';
-import { ok, created, error } from '../utils/responseUtils.js';
+import User from "../models/User.js";
+import catchAsync from "../utils/catchAsync.js";
+import { generateToken } from "../utils/generateToken.js";
 
-export async function register(req, res) {
-  const { email, password, firstName, lastName, phone, address } = req.body;
-  if (!email || !password) return error(res, 400, 'email and password required');
-  try {
-    const existing = await findByEmail(email);
-    if (existing) return error(res, 409, 'User already exists');
-    const insertedId = await createUser({ email, password, firstName, lastName, phone, address });
-    const token = signToken({ id: insertedId.toString(), email });
-    return created(res, { token });
-  } catch (err) {
-    console.error(err);
-    return error(res, 500, 'Internal error');
-  }
-}
-
-export async function login(req, res) {
+export const register = catchAsync(async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return error(res, 400, 'email and password required');
-  try {
-    const user = await findByEmail(email);
-    if (!user) return error(res, 401, 'Invalid credentials');
-    const okPass = await bcrypt.compare(password, user.passwordHash);
-    if (!okPass) return error(res, 401, 'Invalid credentials');
-    const token = signToken({ id: user._id.toString(), email: user.email });
-    return ok(res, { token });
-  } catch (err) {
-    console.error(err);
-    return error(res, 500, 'Internal error');
-  }
-}
 
-export async function me(req, res) {
-  try {
-    const id = req.user.id;
-    const user = await findById(id);
-    if (!user) return error(res, 404, 'User not found');
-    return ok(res, user);
-  } catch (err) {
-    console.error(err);
-    return error(res, 500, 'Internal error');
-  }
-}
+  const exists = await User.findOne({ email });
+  if (exists) return res.status(400).json({ message: "Email already exists" });
+
+  const user = await User.create({ email, password });
+
+  res.json({
+    success: true,
+    user,
+    token: generateToken(user._id),
+  });
+});
+
+export const login = catchAsync(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user || !(await user.matchPassword(password)))
+    return res.status(400).json({ message: "Invalid credentials" });
+
+  res.json({
+    success: true,
+    user,
+    token: generateToken(user._id),
+  });
+});

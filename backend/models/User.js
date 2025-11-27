@@ -1,31 +1,22 @@
-import { ObjectId } from 'mongodb';
-import bcrypt from 'bcryptjs';
-import { getCollection } from '../config/database.js';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const SALT_ROUNDS = 10;
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, default: "customer" },
+});
 
-export async function createUser({ email, password, firstName = null, lastName = null, phone = null, address = null }) {
-  const customers = getCollection('customers');
-  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const doc = {
-    email,
-    firstName,
-    lastName,
-    phone,
-    address,
-    passwordHash,
-    createdAt: new Date()
-  };
-  const result = await customers.insertOne(doc);
-  return result.insertedId;
-}
+// Hash password
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
-export async function findByEmail(email) {
-  const customers = getCollection('customers');
-  return customers.findOne({ email });
-}
+// Compare password
+userSchema.methods.matchPassword = function (enteredPassword) {
+  return bcrypt.compare(enteredPassword, this.password);
+};
 
-export async function findById(id) {
-  const customers = getCollection('customers');
-  return customers.findOne({ _id: new ObjectId(id) }, { projection: { passwordHash: 0 } });
-}
+export default mongoose.model("User", userSchema);
