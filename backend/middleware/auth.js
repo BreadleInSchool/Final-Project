@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
-import User from "../models/User.js";
+import Customer from "../models/customer.js";
+import Admin from "../models/Admin.js";
 
 export const protect = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -10,7 +11,19 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, config.jwtSecret);
-    req.user = await User.findById(decoded.id).select("-password");
+    
+    // Try to find user in Customer or Admin
+    let user = await Customer.findById(decoded.id).select("-password");
+    if (!user) {
+      user = await Admin.findById(decoded.id).select("-password");
+      if (user) user.role = "admin";
+    } else {
+      user.role = "customer";
+    }
+    
+    if (!user) return res.status(401).json({ message: "User not found" });
+    
+    req.user = user;
     next();
   } catch (err) {
     return res.status(401).json({ message: "Token invalid" });

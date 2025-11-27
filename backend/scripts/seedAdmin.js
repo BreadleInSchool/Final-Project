@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import User from "../models/User.js";
 import Admin from "../models/Admin.js";
 import config from "../config/index.js";
 import dotenv from "dotenv";
@@ -15,9 +14,8 @@ async function seedAdmin() {
     console.log("✅ Connected to MongoDB");
 
     // Check if admin already exists
-    const existingAdmin = await User.findOne({
+    const existingAdmin = await Admin.findOne({
       email: "admin@example.com",
-      role: "admin",
     });
 
     if (existingAdmin) {
@@ -26,19 +24,12 @@ async function seedAdmin() {
     }
 
     console.log("🔐 Creating admin user...");
-    // Let the User model hash the password via pre-save hook
-    const user = await User.create({
+    // Let the Admin model hash the password via pre-save hook
+    const admin = await Admin.create({
       username: "admin",
       email: "admin@example.com",
       password: "admin123", // Password will be hashed by the model
-      first_name: "Admin",
-      last_name: "User",
-      role: "admin",
-    });
-
-    console.log("📝 Creating admin profile...");
-    await Admin.create({
-      user_id: user._id,
+      full_name: "Admin User",
       role: "admin",
       is_active: true,
     });

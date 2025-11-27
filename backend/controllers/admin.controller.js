@@ -1,4 +1,3 @@
-import User from "../models/User.js";
 import Admin from "../models/Admin.js";
 import catchAsync from "../utils/catchAsync.js";
 import { generateToken } from "../utils/generateToken.js";
@@ -7,23 +6,17 @@ import { generateToken } from "../utils/generateToken.js";
 export const registerAdmin = catchAsync(async (req, res) => {
   const { username, email, password, full_name, role } = req.body;
 
-  const userExists = await User.findOne({ $or: [{ email }, { username }] });
-  if (userExists)
+  const exists = await Admin.findOne({ $or: [{ email }, { username }] });
+  if (exists)
     return res
       .status(400)
       .json({ message: "Email or username already exists" });
 
-  const user = await User.create({
+  const admin = await Admin.create({
     username,
     email,
     password,
-    first_name: full_name?.split(" ")[0],
-    last_name: full_name?.split(" ")[1],
-    role: "admin",
-  });
-
-  const admin = await Admin.create({
-    user_id: user._id,
+    full_name,
     role: role || "admin",
     is_active: true,
   });
@@ -31,8 +24,8 @@ export const registerAdmin = catchAsync(async (req, res) => {
   res.status(201).json({
     success: true,
     message: "Admin created successfully",
-    user: { _id: user._id, username: user.username, email: user.email },
-    token: generateToken(user._id),
+    admin: { _id: admin._id, username: admin.username, email: admin.email, role: admin.role },
+    token: generateToken(admin._id),
   });
 });
 
@@ -45,12 +38,11 @@ export const loginAdmin = catchAsync(async (req, res) => {
       .status(400)
       .json({ message: "Email and password are required" });
 
-  const user = await User.findOne({ email, role: "admin" });
-  if (!user || !(await user.matchPassword(password)))
+  const admin = await Admin.findOne({ email });
+  if (!admin || !(await admin.matchPassword(password)))
     return res.status(401).json({ message: "Invalid admin credentials" });
 
-  const admin = await Admin.findOne({ user_id: user._id });
-  if (!admin || !admin.is_active)
+  if (!admin.is_active)
     return res.status(403).json({ message: "Admin account is inactive" });
 
   // Update last login
@@ -60,17 +52,14 @@ export const loginAdmin = catchAsync(async (req, res) => {
   res.json({
     success: true,
     message: "Admin login successful",
-    user: { _id: user._id, username: user.username, email: user.email },
-    admin: { role: admin.role },
-    token: generateToken(user._id),
+    admin: { _id: admin._id, username: admin.username, email: admin.email, role: admin.role },
+    token: generateToken(admin._id),
   });
 });
 
 // GET ALL ADMINS (admin only)
 export const getAllAdmins = catchAsync(async (req, res) => {
-  const admins = await Admin.find()
-    .populate("user_id", "username email first_name last_name")
-    .select("-__v");
+  const admins = await Admin.find().select("-password");
 
   res.json({
     success: true,
@@ -81,10 +70,7 @@ export const getAllAdmins = catchAsync(async (req, res) => {
 
 // GET SINGLE ADMIN (admin only)
 export const getAdminById = catchAsync(async (req, res) => {
-  const admin = await Admin.findById(req.params.id).populate(
-    "user_id",
-    "username email first_name last_name"
-  );
+  const admin = await Admin.findById(req.params.id).select("-password");
 
   if (!admin)
     return res.status(404).json({ message: "Admin not found" });
@@ -97,13 +83,13 @@ export const getAdminById = catchAsync(async (req, res) => {
 
 // UPDATE ADMIN (admin only)
 export const updateAdmin = catchAsync(async (req, res) => {
-  const { role, is_active } = req.body;
+  const { role, is_active, full_name } = req.body;
 
   const admin = await Admin.findByIdAndUpdate(
     req.params.id,
-    { role, is_active },
+    { role, is_active, full_name },
     { new: true }
-  ).populate("user_id", "username email first_name last_name");
+  ).select("-password");
 
   if (!admin)
     return res.status(404).json({ message: "Admin not found" });
@@ -121,9 +107,6 @@ export const deleteAdmin = catchAsync(async (req, res) => {
 
   if (!admin)
     return res.status(404).json({ message: "Admin not found" });
-
-  // Optionally delete the associated user
-  await User.findByIdAndDelete(admin.user_id);
 
   res.json({
     success: true,
