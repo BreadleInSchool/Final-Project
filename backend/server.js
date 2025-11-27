@@ -6,8 +6,14 @@ import cookieParser from "cookie-parser";
 import { connectToDatabase } from "./config/database.js";
 import config from "./config/index.js";
 
+// Existing routes
 import authRoutes from "./routes/auth.routes.js";
 import customerRoutes from "./routes/customer.routes.js";
+
+// 🔹 New routes (add these)
+import productRoutes from "./routes/product.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
@@ -47,9 +53,14 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Routes
+// Existing routes
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
+
+// 🔹 New CRUD routes
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
 
 // Error handlers
 app.use(notFoundHandler);
