@@ -1,4 +1,4 @@
-import Customer from "../models/Customer.js";
+import Customer from "../models/customer.js";
 import catchAsync from "../utils/catchAsync.js";
 
 export const getAllCustomers = catchAsync(async (req, res) => {
