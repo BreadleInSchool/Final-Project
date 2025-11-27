@@ -1,10 +1,18 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const customerSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true,
+  },
+  first_name: String,
+  last_name: String,
   phone: String,
   address: String,
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Customer", customerSchema);
+export default mongoose.model("Customer", customerSchema);

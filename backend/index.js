@@ -7,6 +7,7 @@ import config from "./config/index.js";
 
 // Import routes
 import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import customerRoutes from "./routes/customer.routes.js";
 
 // Import middleware
@@ -50,6 +51,7 @@ app.get("/health", (req, res) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/customers", customerRoutes);
 
 // Error handling middleware (must be last)
