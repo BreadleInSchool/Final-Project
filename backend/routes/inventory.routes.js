@@ -1,11 +1,22 @@
-const express = require("express");
+import express from "express";
+import {
+  createInventory,
+  getInventory,
+  getInventoryItem,
+  updateInventory,
+  deleteInventory,
+} from "../controllers/inventory.controller.js";
+import { protect, authorize } from "../middleware/auth.js";
+
 const router = express.Router();
-const controller = require("../controllers/inventoryController");
 
-router.post("/", controller.createInventory);
-router.get("/", controller.getInventory);
-router.get("/:id", controller.getInventoryItem);
-router.put("/:id", controller.updateInventory);
-router.delete("/:id", controller.deleteInventory);
+// Public read
+router.get("/", getInventory);
+router.get("/:id", getInventoryItem);
 
-module.exports = router;
+// Admin only
+router.post("/", protect, authorize(["admin"]), createInventory);
+router.put("/:id", protect, authorize(["admin"]), updateInventory);
+router.delete("/:id", protect, authorize(["admin"]), deleteInventory);
+
+export default router;

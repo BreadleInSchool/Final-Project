@@ -1,13 +1,17 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const inventorySchema = new mongoose.Schema({
-  product: {
+  product_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
+    unique: true,
   },
-  quantity: { type: Number, required: true },
-  lastUpdated: { type: Date, default: Date.now },
+  stock_quantity: { type: Number, default: 0 },
+  reorder_level: { type: Number, default: 10 },
+  max_stock_level: { type: Number },
+  last_restocked: Date,
+  updated_at: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Inventory", inventorySchema);
+export default mongoose.model("Inventory", inventorySchema);

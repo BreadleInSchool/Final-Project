@@ -1,11 +1,22 @@
-const express = require("express");
+import express from "express";
+import {
+  createSupplier,
+  getSuppliers,
+  getSupplier,
+  updateSupplier,
+  deleteSupplier,
+} from "../controllers/supplier.controller.js";
+import { protect, authorize } from "../middleware/auth.js";
+
 const router = express.Router();
-const controller = require("../controllers/supplierController");
 
-router.post("/", controller.createSupplier);
-router.get("/", controller.getSuppliers);
-router.get("/:id", controller.getSupplier);
-router.put("/:id", controller.updateSupplier);
-router.delete("/:id", controller.deleteSupplier);
+// Public read
+router.get("/", getSuppliers);
+router.get("/:id", getSupplier);
 
-module.exports = router;
+// Admin only
+router.post("/", protect, authorize(["admin"]), createSupplier);
+router.put("/:id", protect, authorize(["admin"]), updateSupplier);
+router.delete("/:id", protect, authorize(["admin"]), deleteSupplier);
+
+export default router;

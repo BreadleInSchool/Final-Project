@@ -9,6 +9,12 @@ import config from "./config/index.js";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import customerRoutes from "./routes/customer.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import productRoutes from "./routes/product.routes.js";
+import supplierRoutes from "./routes/supplier.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+import orderDetailsRoutes from "./routes/orderDetails.routes.js";
+import inventoryRoutes from "./routes/inventory.routes.js";
 
 // Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
@@ -53,6 +59,24 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/customers", customerRoutes);
+
+// Category routes (GET public, POST/PUT/DELETE admin only)
+app.use("/api/categories", categoryRoutes);
+
+// Product routes (GET public, POST/PUT/DELETE admin only)
+app.use("/api/products", productRoutes);
+
+// Supplier routes (GET public, POST/PUT/DELETE admin only)
+app.use("/api/suppliers", supplierRoutes);
+
+// Order routes (GET/POST authenticated, PUT/DELETE admin only)
+app.use("/api/orders", orderRoutes);
+
+// OrderDetails routes (GET/POST authenticated, PUT/DELETE admin only)
+app.use("/api/orderDetails", orderDetailsRoutes);
+
+// Inventory routes (GET public, POST/PUT/DELETE admin only)
+app.use("/api/inventory", inventoryRoutes);
 
 // Error handling middleware (must be last)
 app.use(notFoundHandler);

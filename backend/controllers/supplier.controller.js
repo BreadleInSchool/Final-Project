@@ -1,53 +1,36 @@
-const Supplier = require("../models/supplier");
+import Supplier from "../models/supplier.js";
+import catchAsync from "../utils/catchAsync.js";
 
 // CREATE
-exports.createSupplier = async (req, res) => {
-  try {
-    const supplier = await Supplier.create(req.body);
-    res.json(supplier);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const createSupplier = catchAsync(async (req, res) => {
+  const supplier = await Supplier.create(req.body);
+  res.status(201).json({ success: true, supplier });
+});
 
 // READ ALL
-exports.getSuppliers = async (req, res) => {
-  try {
-    const suppliers = await Supplier.find();
-    res.json(suppliers);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const getSuppliers = catchAsync(async (req, res) => {
+  const suppliers = await Supplier.find();
+  res.json({ success: true, suppliers });
+});
 
 // READ ONE
-exports.getSupplier = async (req, res) => {
-  try {
-    const supplier = await Supplier.findById(req.params.id);
-    res.json(supplier);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const getSupplier = catchAsync(async (req, res) => {
+  const supplier = await Supplier.findById(req.params.id);
+  if (!supplier) return res.status(404).json({ message: "Supplier not found" });
+  res.json({ success: true, supplier });
+});
 
 // UPDATE
-exports.updateSupplier = async (req, res) => {
-  try {
-    const supplier = await Supplier.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(supplier);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const updateSupplier = catchAsync(async (req, res) => {
+  const supplier = await Supplier.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  if (!supplier) return res.status(404).json({ message: "Supplier not found" });
+  res.json({ success: true, message: "Supplier updated", supplier });
+});
 
 // DELETE
-exports.deleteSupplier = async (req, res) => {
-  try {
-    await Supplier.findByIdAndDelete(req.params.id);
-    res.json({ message: "Supplier deleted" });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const deleteSupplier = catchAsync(async (req, res) => {
+  await Supplier.findByIdAndDelete(req.params.id);
+  res.json({ success: true, message: "Supplier deleted" });
+});

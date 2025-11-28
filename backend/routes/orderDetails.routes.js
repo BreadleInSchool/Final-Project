@@ -1,11 +1,22 @@
-const express = require("express");
+import express from "express";
+import {
+  createOrderDetails,
+  getOrderDetails,
+  getOrderDetail,
+  updateOrderDetails,
+  deleteOrderDetails,
+} from "../controllers/orderDetails.controller.js";
+import { protect, authorize } from "../middleware/auth.js";
+
 const router = express.Router();
-const controller = require("../controllers/orderDetailsController");
 
-router.post("/", controller.createOrderDetails);
-router.get("/", controller.getOrderDetails);
-router.get("/:id", controller.getOrderDetail);
-router.put("/:id", controller.updateOrderDetails);
-router.delete("/:id", controller.deleteOrderDetails);
+// Authenticated users
+router.get("/", protect, getOrderDetails);
+router.get("/:id", protect, getOrderDetail);
+router.post("/", protect, createOrderDetails);
 
-module.exports = router;
+// Admin only
+router.put("/:id", protect, authorize(["admin"]), updateOrderDetails);
+router.delete("/:id", protect, authorize(["admin"]), deleteOrderDetails);
+
+export default router;

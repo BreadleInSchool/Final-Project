@@ -1,11 +1,13 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const supplierSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  contactPerson: String,
-  phone: String,
+  supplier_name: { type: String, required: true },
+  contact_person: String,
   email: String,
+  phone: String,
   address: String,
+  is_active: { type: Boolean, default: true },
+  created_at: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Supplier", supplierSchema);
+export default mongoose.model("Supplier", supplierSchema);

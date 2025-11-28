@@ -1,18 +1,19 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderDetailsSchema = new mongoose.Schema({
-  orderId: {
+  order_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Order",
     required: true,
   },
-  productId: {
+  product_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
   },
   quantity: { type: Number, required: true },
-  price: { type: Number, required: true },
+  unit_price: { type: Number, required: true },
+  subtotal: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("OrderDetails", orderDetailsSchema);
+export default mongoose.model("OrderDetail", orderDetailsSchema);

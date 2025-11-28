@@ -1,59 +1,42 @@
-const OrderDetails = require("../models/orderDetails");
+import OrderDetail from "../models/orderDetails.js";
+import catchAsync from "../utils/catchAsync.js";
 
 // CREATE
-exports.createOrderDetails = async (req, res) => {
-  try {
-    const detail = await OrderDetails.create(req.body);
-    res.json(detail);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const createOrderDetails = catchAsync(async (req, res) => {
+  const detail = await OrderDetail.create(req.body);
+  res.status(201).json({ success: true, detail });
+});
 
 // READ ALL
-exports.getOrderDetails = async (req, res) => {
-  try {
-    const details = await OrderDetails.find()
-      .populate("orderId")
-      .populate("productId");
-    res.json(details);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const getOrderDetails = catchAsync(async (req, res) => {
+  const details = await OrderDetail.find()
+    .populate("order_id")
+    .populate("product_id");
+  res.json({ success: true, details });
+});
 
 // READ ONE
-exports.getOrderDetail = async (req, res) => {
-  try {
-    const detail = await OrderDetails.findById(req.params.id)
-      .populate("orderId")
-      .populate("productId");
-    res.json(detail);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const getOrderDetail = catchAsync(async (req, res) => {
+  const detail = await OrderDetail.findById(req.params.id)
+    .populate("order_id")
+    .populate("product_id");
+  if (!detail) return res.status(404).json({ message: "Order detail not found" });
+  res.json({ success: true, detail });
+});
 
 // UPDATE
-exports.updateOrderDetails = async (req, res) => {
-  try {
-    const detail = await OrderDetails.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    res.json(detail);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const updateOrderDetails = catchAsync(async (req, res) => {
+  const detail = await OrderDetail.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  if (!detail) return res.status(404).json({ message: "Order detail not found" });
+  res.json({ success: true, message: "Order detail updated", detail });
+});
 
 // DELETE
-exports.deleteOrderDetails = async (req, res) => {
-  try {
-    await OrderDetails.findByIdAndDelete(req.params.id);
-    res.json({ message: "Order detail deleted" });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
+export const deleteOrderDetails = catchAsync(async (req, res) => {
+  await OrderDetail.findByIdAndDelete(req.params.id);
+  res.json({ success: true, message: "Order detail deleted" });
+});
