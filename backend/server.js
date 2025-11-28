@@ -61,6 +61,9 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/order-details", orderDetailRoutes);
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 // Error handlers
 app.use(notFoundHandler);
