@@ -1,24 +1,11 @@
 import express from "express";
-import {
-  registerAdmin,
-  loginAdmin,
-  getAllAdmins,
-  getAdminById,
-  updateAdmin,
-  deleteAdmin,
-} from "../controllers/admin.controller.js";
-import { protect } from "../middleware/auth.js";
+import { getDashboardStats } from "../controllers/admin.controller.js";
+import { protect, authorize } from "../middleware/auth.js";
+import { loginAdmin } from "../controllers/auth.controller.js"; // Assuming this exists or we need to create it
 
 const router = express.Router();
 
-// Public routes
 router.post("/login", loginAdmin);
-
-// Protected routes (admin only)
-router.post("/register", protect, registerAdmin);
-router.get("/", protect, getAllAdmins);
-router.get("/:id", protect, getAdminById);
-router.put("/:id", protect, updateAdmin);
-router.delete("/:id", protect, deleteAdmin);
+router.get("/stats", protect, authorize(["admin"]), getDashboardStats);
 
 export default router;

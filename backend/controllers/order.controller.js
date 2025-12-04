@@ -3,7 +3,11 @@ import catchAsync from "../utils/catchAsync.js";
 
 // CREATE ORDER
 export const createOrder = catchAsync(async (req, res) => {
-  const order = await Order.create(req.body);
+  const orderData = {
+    ...req.body,
+    customer_id: req.user._id,
+  };
+  const order = await Order.create(orderData);
   res.status(201).json({ success: true, order });
 });
 

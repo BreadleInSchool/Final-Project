@@ -27,10 +27,10 @@ const PORT = config.port;
 // Middleware
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: [config.corsOrigin, "http://localhost:5173", "http://127.0.0.1:5173"],
     credentials: true, // Allow cookies to be sent
-    allowedHeaders: "*",
-    methods: "*",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 
